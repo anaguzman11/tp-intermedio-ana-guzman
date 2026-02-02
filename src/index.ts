@@ -6,11 +6,11 @@ dns.setServers(['1.1.1.1', '8.8.8.8']);
 import express, { Request, Response } from "express";
 import path from "path";
 import petsRoutes from './routes/pets.routes';
-
 import authRoutes from "./routes/auth.routes";
+import veterinarianRoutes from "./routes/veterinarian.routes";
 import { authenticate, authorize } from "./middlewares/auth.middleware";
 import { connectDB } from "./config/database";
-import petsRoute from "./routes/pets.routes";
+
 
 
 const app = express();
