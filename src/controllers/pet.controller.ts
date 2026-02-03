@@ -37,11 +37,11 @@ export const createPet = async (req: Request, res: Response) => {
 // Función para listar las mascotas de un usuario específico
 export const getMyPets = async (req: Request, res: Response) => {
     try {
-        const user = (req as any).user as JwtPayload;
+        const user = (req as any).user as JwtPayload; 
         const ownerId = user.id;
 
         // Busca todas las mascotas que coincidan con el ownerId
-        const pets = await Pet.find({ owner: ownerId });
+        const pets = await Pet.find({ owner: ownerId }); 
         return res.json(pets);
     } catch (error) {
         console.error(error);

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import * as authService from "../services/auth.service";
 import { validationResult } from "express-validator";
-import { Error } from 'mongoose'; // Importamos tipos de error de Mongoose
+import { Error } from 'mongoose'; // Importa tipos de error de Mongoose
 
 export const register = async (req: Request, res: Response) => {
   try {

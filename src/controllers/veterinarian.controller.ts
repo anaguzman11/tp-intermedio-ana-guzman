@@ -5,7 +5,7 @@ import Pet from '../models/pet.model'; // Importamos el modelo Pet
 export const getAllPets = async (req: Request, res: Response) => {
   try {
     // El middleware 'authorize' ya verificó que el usuario es veterinario.
-    // Ahora solo buscamos todos los registros de mascotas.
+    // solo buscamos todos los registros de mascotas.
     // Usamos .populate('owner') para traer la info del dueño referenciado
     const pets = await Pet.find({}).populate('owner', 'name email'); 
     
