@@ -11,7 +11,6 @@ export const createPet = async (req: Request, res: Response) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    // El ID del dueño se obtiene del token JWT que adjuntamos en el middleware authenticate
     const user = (req as any).user as JwtPayload; 
     const ownerId = user.id;
 
@@ -22,7 +21,7 @@ export const createPet = async (req: Request, res: Response) => {
       species,
       breed,
       age,
-      owner: ownerId, // Asignamos el dueño automáticamente
+      owner: ownerId, 
     });
 
     const savedPet = await newPet.save();
@@ -40,11 +39,31 @@ export const getMyPets = async (req: Request, res: Response) => {
         const user = (req as any).user as JwtPayload; 
         const ownerId = user.id;
 
-        // Busca todas las mascotas que coincidan con el ownerId
-        const pets = await Pet.find({ owner: ownerId }); 
+        // Busca todas las mascotas, y **popula** los campos 'name' y 'email' del dueño
+        const pets = await Pet.find({ owner: ownerId }).populate('owner', 'name email'); 
         return res.json(pets);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Error al obtener las mascotas' });
     }
+};
+
+// Función para obtener los detalles de una mascota específica por su ID
+export const getPetById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params; // Capturamos el ID que viene en la URL de Insomnia
+
+    // findById busca el documento y **popula** los datos del dueño
+    const pet = await Pet.findById(id).populate('owner', 'name email');
+
+    if (!pet) {
+      return res.status(404).json({ error: "Mascota no encontrada" });
+    }
+
+    return res.json(pet); // Devuelve la mascota encontrada con los datos completos del dueño
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Error al obtener la mascota por ID' });
+  }
 };

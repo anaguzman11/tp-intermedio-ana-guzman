@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
 import * as authService from "../services/auth.service";
 import { validationResult } from "express-validator";
-import { Error } from 'mongoose'; // Importa tipos de error de Mongoose
+import { Error } from 'mongoose'; 
+import User from '../models/users.model'; 
 
+
+
+// PARA REGISTRAR USUARIO
 export const register = async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
@@ -10,15 +14,11 @@ export const register = async (req: Request, res: Response) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    // Ahora esperamos 'name', 'email', 'password' y opcionalmente 'role'
     const { name, email, password, role } = req.body; 
-    
-    // Pasamos el nuevo campo 'name' y 'role' al servicio
     await authService.register(name, email, password, role);
 
     return res.status(201).json({ message: "Usuario creado exitosamente" });
   } catch (error: any) {
-    // Manejo de errores de Mongoose más general
     if (error.code === 11000) {
       return res.status(409).json({ error: "El email ya está registrado" });
     }
@@ -28,8 +28,35 @@ export const register = async (req: Request, res: Response) => {
     console.error(error);
     return res.status(500).json({ error: "Error al registrar el usuario" });
   }
+}; 
+
+
+//PARA ACTUALIZAR USUARIO
+export const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(id, updateData, { 
+      new: true, 
+      runValidators: true 
+    });
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    return res.json({
+      message: "Datos actualizados correctamente",
+      user: updatedUser
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Error al actualizar el usuario" });
+  }
 };
 
+// PARA LOGIN
 export const login = async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
@@ -50,3 +77,26 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+//PARA ELIMINAR USUARIO
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params; // Obtenemos el ID de la URL
+
+    // Buscamos y eliminamos el usuario
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    if (!deletedUser) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    // Respuesta de éxito (200 OK)
+    return res.json({
+      message: "Usuario eliminado correctamente",
+      user: deletedUser
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Error al eliminar el usuario" });
+  }
+};

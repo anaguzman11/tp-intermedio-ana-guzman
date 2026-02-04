@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { authenticate } from '../middlewares/auth.middleware';
-import { createPet, getMyPets } from '../controllers/pet.controller';
+import { createPet, getMyPets, getPetById } from '../controllers/pet.controller'; // Importamos getPetById
 import { body } from 'express-validator';
 
 const router = Router();
 
-// Ruta protegida (requiere JWT válido)
+// Todas las rutas de abajo requieren estar logueado
 router.use(authenticate); 
 
 // POST /api/pets/register: Registrar una nueva mascota para el usuario autenticado
@@ -23,5 +23,8 @@ router.post(
 // GET /api/pets/my: Listar las mascotas del usuario autenticado
 router.get('/my', getMyPets);
 
-export default router;
+// NUEVA RUTA: GET /api/pets/:id : Listar UNA sola mascota por su ID
+// El :id es un marcador de posición para el ID real que enviarás desde Insomnia
+router.get('/:id', getPetById);
 
+export default router;
